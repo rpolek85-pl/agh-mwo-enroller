@@ -6,6 +6,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import com.company.enroller.model.Participant;
 
@@ -13,6 +14,9 @@ import com.company.enroller.model.Participant;
 public class ParticipantService {
 
 	DatabaseConnector connector;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
 	public ParticipantService() {
 		connector = DatabaseConnector.getInstance();
@@ -33,6 +37,9 @@ public class ParticipantService {
     }
 
     public void save(Participant participant) {
+        String hashedPassword = passwordEncoder.encode(participant.getPassword());
+        participant.setPassword(hashedPassword);
+
         Transaction transaction = connector.getSession().beginTransaction();
         connector.getSession().save(participant);
         transaction.commit();

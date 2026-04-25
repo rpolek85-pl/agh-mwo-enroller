@@ -49,4 +49,28 @@ public class MeetingService {
         transaction.commit();
     }
 
+    public void addParticipant(Meeting meeting, Participant participant) {
+        Transaction transaction = connector.getSession().beginTransaction();
+        meeting.addParticipant(participant);
+        connector.getSession().merge(meeting);
+        transaction.commit();
+    }
+
+    public Collection<Participant> getParticipants(Meeting meeting) {
+        return meeting.getParticipants();
+    }
+
+    public Participant getParticipant(Meeting meeting, Participant participant) {
+        return meeting.getParticipants()
+                .stream()
+                .filter(p -> p.getLogin().equals(participant.getLogin()))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public void removeParticipant(Meeting meeting, Participant participant) {
+        Transaction transaction = connector.getSession().beginTransaction();
+        meeting.getParticipants().remove(participant);
+        transaction.commit();
+    }
 }
